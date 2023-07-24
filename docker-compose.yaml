@@ -1,0 +1,14 @@
+version: '3'
+services:
+  dashboard:
+    build: 
+      context: ./
+    container_name: ${container_name}
+    restart: always
+    ports:
+      - 3000:80
+    networks:
+      - network   
+networks:
+  network:
+    driver: bridge
