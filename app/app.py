@@ -6,8 +6,8 @@ from flask import Flask
 
 server = Flask(__name__)
 app = Dash(external_stylesheets=[BOOTSTRAP], server=server)
-app.title = "Stock Dashboard"
+app.title = "Stocks Dashboard"
 app.layout = create_layout(app)
 
 if __name__ == "__main__":
-    app.run()
+    app.run_server(port=3000, host="0.0.0.0")
