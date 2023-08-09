@@ -6,7 +6,7 @@ from flask import Flask
 
 server = Flask(__name__)
 app = Dash(external_stylesheets=[BOOTSTRAP], server=server)
-app.title = "Stocks Dashboard"
+app.title = "History"
 app.layout = create_layout(app)
 
 if __name__ == "__main__":

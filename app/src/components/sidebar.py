@@ -27,8 +27,10 @@ def render(app: Dash) -> html.Div:
                     for x, y in zip(["FTSE100", "Nasdaq"], ["^FTSE", "NQ=F"])
                 ],
                 inline=True,
-                labelStyle={"margin": "0rem"},
+                labelStyle={"margin": "0.5rem"},
                 style={"display": "flex", "padding": "0rem"},
+                id="exchange",
+                value="^FTSE",
             ),
             html.Hr(),
             "Select stock for analysis",

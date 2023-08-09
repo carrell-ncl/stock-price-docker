@@ -9,50 +9,39 @@ import pandas as pd
 
 from . import ids
 
-# CONTENT_STYLE = {
-#     "margin-left": "24rem",
-#     "margin-right": "18rem",
-#     "padding": "1rem 0rem",
-#     'backgroundColor': 'black',
-# }
-
-MEDAL_DATA = px.data.medals_long()
-
 
 def render(app: Dash) -> html.Div:
-    @app.callback(Output(ids.BAR_CHART, "children"), Input("stock_id", "value"))
-    def update_bar_chart(nations: list[str]) -> html.Div:
-        # filtered_data = MEDAL_DATA[MEDAL_DATA.nation.isin([nations])]
-        # print(f"dfefe {filtered_data}")
-        # fig = px.bar(filtered_data, x="medal", y="count", color="nation", text="nation")
-        # print(nations)
-        # return html.Div(dcc.Graph(figure=fig), id=ids.BAR_CHART)
-
+    @app.callback(
+        Output(ids.LINE_CHART, "children"),
+        Input("exchange", "value"),
+        Input("stock_id", "value"),
+    )
+    def update_line_chart(exchange_code: str, stock_code: str) -> html.Div:
         today = datetime.datetime.now()
 
         # First stock query
         stock = "^FTSE"
-        stock_info = YahooFinancials(stock)
+        stock_info = YahooFinancials(exchange_code)
         history = stock_info.get_historical_price_data(
             "2017-01-10", today.strftime("%Y-%m-%d"), "monthly"
         )
-        date = [val["formatted_date"] for val in history[stock]["prices"]]
-        close = [val["close"] for val in history[stock]["prices"]]
+        date = [val["formatted_date"] for val in history[exchange_code]["prices"]]
+        close = [val["close"] for val in history[exchange_code]["prices"]]
         df = pd.DataFrame({"date": date, "Close": close})
 
         # Seconnd stock query
-        stock_info2 = YahooFinancials(nations)
+        stock_info2 = YahooFinancials(stock_code)
         history2 = stock_info2.get_historical_price_data(
             "2017-01-10", today.strftime("%Y-%m-%d"), "monthly"
         )
-        date = [val["formatted_date"] for val in history2[nations]["prices"]]
-        close = [val["close"] for val in history2[nations]["prices"]]
+        date = [val["formatted_date"] for val in history2[stock_code]["prices"]]
+        close = [val["close"] for val in history2[stock_code]["prices"]]
         dfs = pd.DataFrame({"date": date, "Close": close})
 
         fig = make_subplots(
             rows=2,
             cols=1,
-            subplot_titles=(f"{stock}100", nations),
+            subplot_titles=(exchange_code, stock_code),
             vertical_spacing=0.1,
         )
 
@@ -88,6 +77,6 @@ def render(app: Dash) -> html.Div:
         fig.layout.annotations[0].update(x=0.025)
         fig.layout.annotations[1].update(x=0.025)
 
-        return html.Div(dcc.Graph(figure=fig), id=ids.BAR_CHART)
+        return html.Div(dcc.Graph(figure=fig), id=ids.LINE_CHART)
 
-    return html.Div(id=ids.BAR_CHART)
+    return html.Div(id=ids.LINE_CHART)

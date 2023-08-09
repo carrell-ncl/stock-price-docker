@@ -10,7 +10,7 @@ def create_layout(app: Dash) -> html.Div:
     CONTENT_STYLE = {
         "margin-left": "24rem",
         "margin-right": "18rem",
-        "padding": "0rem 0rem",
+        "padding": "1rem 0rem",
         "backgroundColor": "black",
     }
 
