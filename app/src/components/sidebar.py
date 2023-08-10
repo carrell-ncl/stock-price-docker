@@ -20,15 +20,18 @@ def render(app: Dash) -> html.Div:
         [
             html.H2("Make Selection"),
             html.Hr(),
-            "Exchange",
+            html.H4("Exchange"),
             dcc.RadioItems(
                 options=[
                     {"label": x, "value": y}
-                    for x, y in zip(["FTSE100", "Nasdaq"], ["^FTSE", "NQ=F"])
+                    for x, y in zip(
+                        ["FTSE100", "Nasdaq", "Dow Jones", "S&P5000"],
+                        ["^FTSE", "NQ=F", "^DJI", "^GSPC"],
+                    )
                 ],
-                inline=True,
-                labelStyle={"margin": "0.5rem"},
-                style={"display": "flex", "padding": "0rem"},
+                # inline=False,
+                # labelStyle={"margin": "0.5rem"},
+                # style={"display": "flex", "padding": "0rem"},
                 id="exchange",
                 value="^FTSE",
             ),

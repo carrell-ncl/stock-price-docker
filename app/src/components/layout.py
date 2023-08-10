@@ -1,7 +1,7 @@
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 
-from . import line_plot, sidebar, top_stocks_table, line_plot2
+from . import line_plot, sidebar, top_stocks_table
 
 # from src.components import inputs
 

@@ -23,20 +23,22 @@ def render(app: Dash) -> html.Div:
         stock = "^FTSE"
         stock_info = YahooFinancials(exchange_code)
         history = stock_info.get_historical_price_data(
-            "2017-01-10", today.strftime("%Y-%m-%d"), "monthly"
+            "2019-01-10", today.strftime("%Y-%m-%d"), "daily"
         )
         date = [val["formatted_date"] for val in history[exchange_code]["prices"]]
         close = [val["close"] for val in history[exchange_code]["prices"]]
         df = pd.DataFrame({"date": date, "Close": close})
+        df["av"] = df.Close.rolling(20).mean()
 
         # Seconnd stock query
         stock_info2 = YahooFinancials(stock_code)
         history2 = stock_info2.get_historical_price_data(
-            "2017-01-10", today.strftime("%Y-%m-%d"), "monthly"
+            "2019-01-10", today.strftime("%Y-%m-%d"), "daily"
         )
         date = [val["formatted_date"] for val in history2[stock_code]["prices"]]
         close = [val["close"] for val in history2[stock_code]["prices"]]
         dfs = pd.DataFrame({"date": date, "Close": close})
+        dfs["av"] = dfs.Close.rolling(20).mean()
 
         fig = make_subplots(
             rows=2,
@@ -46,13 +48,16 @@ def render(app: Dash) -> html.Div:
         )
 
         fig.append_trace(
-            go.Scatter(
-                x=df.date,
-                y=df.Close,
-            ),
+            go.Scatter(x=df.date, y=df.Close, name=exchange_code),
             row=1,
             col=1,
         )
+        fig.append_trace(
+            go.Scatter(x=df.date, y=df.av, name=f"{stock_code} rolling average"),
+            row=1,
+            col=1,
+        )
+        # fig.update_traces(line_color="red")
 
         fig.append_trace(
             go.Scatter(
@@ -62,9 +67,17 @@ def render(app: Dash) -> html.Div:
             row=2,
             col=1,
         )
+        fig.append_trace(
+            go.Scatter(
+                x=dfs.date,
+                y=dfs.av,
+            ),
+            row=2,
+            col=1,
+        )
 
         # fig = px.line(df, y="Close", title=stock)
-        fig.update_traces(line_color="chartreuse")
+        # fig.update_traces(line_color="chartreuse")
         fig.layout.template = "plotly_dark"
         fig.update_layout(
             plot_bgcolor="#474952",

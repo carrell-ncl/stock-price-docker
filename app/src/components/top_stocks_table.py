@@ -53,7 +53,7 @@ def render(app: Dash) -> html.Div:
     stocks_df["Stock"] = stocks
     stocks_df["Current"] = today_prices
     stocks_df["Previous"] = yesterday_prices
-    stocks_df["change"] = round(stocks_df.Current - stocks_df.Previous, 2)
+    stocks_df["change\n(1 day)"] = round(stocks_df.Current - stocks_df.Previous, 2)
 
     stocks_df = stocks_df.round(2)
 
