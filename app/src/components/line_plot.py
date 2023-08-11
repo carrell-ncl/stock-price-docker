@@ -5,10 +5,10 @@ import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 import datetime
 from yahoofinancials import YahooFinancials
+import yfinance as yf
 import pandas as pd
 
 from . import ids
-
 
 def render(app: Dash) -> html.Div:
     @app.callback(
@@ -19,9 +19,12 @@ def render(app: Dash) -> html.Div:
     def update_line_chart(exchange_code: str, stock_code: str) -> html.Div:
         today = datetime.datetime.now()
 
+        stocks = ids.stocks
+        exchange = ids.exchange
+
         # First stock query
-        stock = "^FTSE"
         stock_info = YahooFinancials(exchange_code)
+        exchange_name = exchange.get(exchange_code)
         history = stock_info.get_historical_price_data(
             "2019-01-10", today.strftime("%Y-%m-%d"), "daily"
         )
@@ -32,6 +35,8 @@ def render(app: Dash) -> html.Div:
 
         # Seconnd stock query
         stock_info2 = YahooFinancials(stock_code)
+        stock_name = stocks.get(stock_code)
+
         history2 = stock_info2.get_historical_price_data(
             "2019-01-10", today.strftime("%Y-%m-%d"), "daily"
         )
@@ -43,17 +48,17 @@ def render(app: Dash) -> html.Div:
         fig = make_subplots(
             rows=2,
             cols=1,
-            subplot_titles=(exchange_code, stock_code),
-            vertical_spacing=0.1,
+            subplot_titles=[exchange_name, stock_name],
+            vertical_spacing=0.1
         )
 
         fig.append_trace(
-            go.Scatter(x=df.date, y=df.Close, name=exchange_code),
+            go.Scatter(x=df.date, y=df.Close),
             row=1,
             col=1,
         )
         fig.append_trace(
-            go.Scatter(x=df.date, y=df.av, name=f"{stock_code} rolling average"),
+            go.Scatter(x=df.date, y=df.av),
             row=1,
             col=1,
         )
@@ -78,17 +83,20 @@ def render(app: Dash) -> html.Div:
 
         # fig = px.line(df, y="Close", title=stock)
         # fig.update_traces(line_color="chartreuse")
-        fig.layout.template = "plotly_dark"
+        fig.layout.template = "ggplot2"
         fig.update_layout(
             plot_bgcolor="#474952",
+            paper_bgcolor='#353935',
+            font = dict(color = 'white'),
             width=800,
             height=650,
             autosize=False,
             showlegend=False,
             margin=dict(l=20, r=20, t=20, b=20),
         )
-        fig.layout.annotations[0].update(x=0.025)
-        fig.layout.annotations[1].update(x=0.025)
+
+        # fig.layout.annotations[0].update(x=0.025)
+        # fig.layout.annotations[1].update(x=0.025)
 
         return html.Div(dcc.Graph(figure=fig), id=ids.LINE_CHART)
 

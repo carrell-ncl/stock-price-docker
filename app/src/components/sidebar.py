@@ -11,7 +11,7 @@ SIDEBAR_STYLE = {
     "bottom": 0,
     "width": "15rem",
     "padding": "2rem 2rem",
-    "background-color": "#9e9a99",
+    "background-color": "#0096FF",
 }
 
 
@@ -25,8 +25,8 @@ def render(app: Dash) -> html.Div:
                 options=[
                     {"label": x, "value": y}
                     for x, y in zip(
-                        ["FTSE100", "Nasdaq", "Dow Jones", "S&P5000"],
-                        ["^FTSE", "NQ=F", "^DJI", "^GSPC"],
+                        ids.exchange.values(),
+                        ids.exchange.keys(),
                     )
                 ],
                 # inline=False,
@@ -36,7 +36,7 @@ def render(app: Dash) -> html.Div:
                 value="^FTSE",
             ),
             html.Hr(),
-            "Select stock for analysis",
+            "Stock selection",
             dcc.Dropdown(
                 options=[{"label": x, "value": x} for x in ids.stocks],
                 id="stock_id",
