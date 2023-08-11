@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 from dash.dependencies import Input, Output
 import datetime
 from yahoofinancials import YahooFinancials
-import yfinance as yf
 import pandas as pd
 
 from . import ids
