@@ -15,7 +15,8 @@ SIDEBAR_STYLE = {
     "background-color": "#0096FF",
 }
 
-stocks_dropdown = list(ids.stocks) + get_gainers()
+stocks_dropdown = list(ids.stocks) + get_gainers()[1]
+
 
 def render(app: Dash) -> html.Div:
     return html.Div(

@@ -9,6 +9,7 @@ import pandas as pd
 
 from . import ids
 
+
 def render(app: Dash) -> html.Div:
     @app.callback(
         Output(ids.LINE_CHART, "children"),
@@ -48,7 +49,7 @@ def render(app: Dash) -> html.Div:
             rows=2,
             cols=1,
             subplot_titles=[exchange_name, stock_name],
-            vertical_spacing=0.1
+            vertical_spacing=0.1,
         )
 
         fig.append_trace(
@@ -85,8 +86,8 @@ def render(app: Dash) -> html.Div:
         fig.layout.template = "ggplot2"
         fig.update_layout(
             plot_bgcolor="#474952",
-            paper_bgcolor='#353935',
-            font = dict(color = 'white'),
+            paper_bgcolor="#353935",
+            font=dict(color="white"),
             width=800,
             height=650,
             autosize=False,

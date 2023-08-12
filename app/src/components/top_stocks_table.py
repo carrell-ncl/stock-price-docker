@@ -21,43 +21,42 @@ TABLE_STYLE = {
 }
 
 CONDITION_STYLES = [
-        {
-            'if': {
-                'filter_query': '{Change} >= 0',
-                'column_id': ['Current', 'Previous', 'Change', '%Change']
-            },
-            'color': 'green'
+    {
+        "if": {
+            "filter_query": "{Change} >= 0",
+            "column_id": ["Current", "Previous", "Change", "%Change"],
         },
-        {
-            'if': {
-                'filter_query': '{Change} < 0',
-                'column_id': ['Current', 'Previous', 'Change', '%Change']
-            },
-            'color': 'red'
-        }]
+        "color": "green",
+    },
+    {
+        "if": {
+            "filter_query": "{Change} < 0",
+            "column_id": ["Current", "Previous", "Change", "%Change"],
+        },
+        "color": "red",
+    },
+]
 
 
-
-def get_stock_table(stock_list: list[str]) ->pd.DataFrame():
-
+def get_stock_table(stock_ticks: list[str], stock_names: list[str]) -> pd.DataFrame():
     stocks_df = pd.DataFrame()
 
     # Ensure only buisiness days are selected
     today_working = datetime.datetime.today()
 
-    if today_working.weekday() in (5,6):
+    if today_working.weekday() in (5, 6):
         while today_working.weekday() >= 5:
             today_working -= datetime.timedelta(days=1)
 
     prev_working = today_working - datetime.timedelta(days=1)
-    if prev_working.weekday() in (5,6):
+    if prev_working.weekday() in (5, 6):
         while prev_working.weekday() >= 5:
             prev_working -= datetime.timedelta(days=1)
 
     today_working = today_working + datetime.timedelta(days=1)
     today_prices = list()
     yesterday_prices = list()
-    for stock in stock_list:
+    for stock in stock_ticks:
         stock_info = YahooFinancials(stock)
         history = stock_info.get_historical_price_data(
             prev_working.strftime("%Y-%m-%d"),
@@ -77,37 +76,40 @@ def get_stock_table(stock_list: list[str]) ->pd.DataFrame():
             today_prices.append(0)
             yesterday_prices.append(0)
 
-    stocks_df["Stock"] = stock_list
+    stocks_df["Stock"] = stock_ticks
     stocks_df["Current"] = today_prices
     stocks_df["Previous"] = yesterday_prices
     stocks_df["Change"] = stocks_df.Current - stocks_df.Previous
-    stocks_df["%Change"] = (stocks_df.Change/stocks_df.Previous)*100
-
+    stocks_df["%Change"] = (stocks_df.Change / stocks_df.Previous) * 100
     stocks_df = stocks_df.round(2)
 
+    stocks_df["Stock_name"] = stock_names
+
     return stocks_df
+
 
 def render(app: Dash) -> html.Div:
     ## TODO HANDLE WEEKENDS AND HOLIDAYS
 
     # Define top 20 stocks
     stocks = ids.stocks.keys()
+    names = ids.stocks.values()
     gainers = get_gainers()
 
-    stocks_df = get_stock_table([val for val in stocks][:12])
-    gainers_df = get_stock_table(gainers[:5])
+    stocks_df = get_stock_table(
+        [val for val in stocks][:12], [val for val in names][:12]
+    )
+    gainers_df = get_stock_table(gainers[1], gainers[0])
 
     # stocks_df.to_dict("records")
 
     return html.Div(
         className="app-div",
         children=[
-            # html.Hr(),
             html.H4("Live prices", style={"color": "#F0EAD6"}),
-            # html.Hr(),
             dash_table.DataTable(
                 data=stocks_df.to_dict("records"),
-                columns=[{"id": c, "name": c} for c in stocks_df.columns],
+                columns=[{"id": c, "name": c} for c in stocks_df.columns[:-1]],
                 style_cell_conditional=[
                     {"if": {"column_id": c}, "textAlign": "left"} for c in ["Stock"]
                 ],
@@ -116,13 +118,19 @@ def render(app: Dash) -> html.Div:
                 style_cell={"backgroundColor": "rgb(50, 50, 50)", "color": "white"},
                 style_as_list_view=True,
                 id="tbl",
-                style_data_conditional=CONDITION_STYLES
-                ),
-                html.Hr(),
-                html.H4("Top Gainers (24hrs)", style={"color": "#F0EAD6"}),
-                dash_table.DataTable(
+                style_data_conditional=CONDITION_STYLES,
+                tooltip_data=[
+                    {
+                        "Stock": {"value": row["Stock_name"], "type": "markdown"},
+                    }
+                    for row in stocks_df.to_dict("records")
+                ],
+            ),
+            html.Hr(),
+            html.H4("Top Gainers (24hrs)", style={"color": "#F0EAD6"}),
+            dash_table.DataTable(
                 data=gainers_df.to_dict("records"),
-                columns=[{"id": c, "name": c} for c in stocks_df.columns],
+                columns=[{"id": c, "name": c} for c in stocks_df.columns[:-1]],
                 style_cell_conditional=[
                     {"if": {"column_id": c}, "textAlign": "left"} for c in ["Stock"]
                 ],
@@ -131,9 +139,14 @@ def render(app: Dash) -> html.Div:
                 style_cell={"backgroundColor": "rgb(50, 50, 50)", "color": "white"},
                 style_as_list_view=True,
                 id="tbl",
-                style_data_conditional=CONDITION_STYLES
-                )
+                style_data_conditional=CONDITION_STYLES,
+                tooltip_data=[
+                    {
+                        "Stock": {"value": row["Stock_name"], "type": "markdown"},
+                    }
+                    for row in gainers_df.to_dict("records")
                 ],
-        style=TABLE_STYLE
-        
+            ),
+        ],
+        style=TABLE_STYLE,
     )

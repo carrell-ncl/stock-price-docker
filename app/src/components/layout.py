@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 
 from . import line_plot, sidebar, top_stocks_table
 
+
 def create_layout(app: Dash) -> html.Div:
     CONTENT_STYLE = {
         "top": 40,
@@ -10,7 +11,7 @@ def create_layout(app: Dash) -> html.Div:
         "margin-right": "18rem",
         "padding": "1rem 0rem",
         "backgroundColor": "#353935",
-        "position": "absolute"
+        "position": "absolute",
     }
     header = html.Div(
         style={"bottom": 40},

@@ -18,12 +18,12 @@ stocks = {
     "WMT": "Walmart Inc.",
     "XOM": "Exxon Mobil Corporation",
     "TCEHY": "Tencent Holdings Limited",
-    "MA": "Mastercard Incorporated"
+    "MA": "Mastercard Incorporated",
 }
 
 exchange = {
     "^FTSE": "FTSE100",
     "NQ=F": "Nasdaq",
     "^DJI": "Dow Jones",
-    "^GSPC": "S&P5000"
+    "^GSPC": "S&P5000",
 }
