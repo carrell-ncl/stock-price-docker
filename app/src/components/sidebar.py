@@ -2,6 +2,7 @@ from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 from . import ids
+from src.components.get_gainers import get_gainers
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
 SIDEBAR_STYLE = {
@@ -14,6 +15,7 @@ SIDEBAR_STYLE = {
     "background-color": "#0096FF",
 }
 
+stocks_dropdown = list(ids.stocks) + get_gainers()
 
 def render(app: Dash) -> html.Div:
     return html.Div(
@@ -38,7 +40,7 @@ def render(app: Dash) -> html.Div:
             html.Hr(),
             "Stock selection",
             dcc.Dropdown(
-                options=[{"label": x, "value": x} for x in ids.stocks],
+                options=[{"label": x, "value": x} for x in stocks_dropdown],
                 id="stock_id",
                 value="AAPL",
             ),

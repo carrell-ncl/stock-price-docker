@@ -3,6 +3,7 @@
 ## Technology stack used
 - Python
 - Plotly Dash
+- Yahoo Financials
 - Docker
 - AWS
 
