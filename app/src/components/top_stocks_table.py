@@ -29,25 +29,25 @@ def render(app: Dash) -> html.Div:
     stocks_df = pd.DataFrame()
 
     # Ensure only buisiness days are selected
-    today = datetime.datetime.today()
- 
-    while today.weekday() >= 5:
-        today -= datetime.timedelta(days=1)
-        
-    recent = today - datetime.timedelta(days=1)
+    today_working = datetime.datetime.today()
 
-    while recent.weekday() >= 5:
-        recent -= datetime.timedelta(days=1)
- 
-    prev_working = recent - datetime.timedelta(days=1)
+    if today_working.weekday() in (5,6):
+        while today_working.weekday() >= 5:
+            today_working -= datetime.timedelta(days=1)
 
+    prev_working = today_working - datetime.timedelta(days=1)
+    if prev_working.weekday() in (5,6):
+        while prev_working.weekday() >= 5:
+            prev_working -= datetime.timedelta(days=1)
+
+    today_working = today_working + datetime.timedelta(days=1)
     today_prices = list()
     yesterday_prices = list()
     for stock in stocks:
         stock_info = YahooFinancials(stock)
         history = stock_info.get_historical_price_data(
             prev_working.strftime("%Y-%m-%d"),
-            datetime.datetime.today().strftime("%Y-%m-%d"),
+            today_working.strftime("%Y-%m-%d"),
             "daily",
         )
         # Ensure a value is returned
@@ -66,7 +66,7 @@ def render(app: Dash) -> html.Div:
     stocks_df["Stock"] = stocks
     stocks_df["Current"] = today_prices
     stocks_df["Previous"] = yesterday_prices
-    stocks_df["change (1 day)"] = round(stocks_df.Current - stocks_df.Previous, 2)
+    stocks_df["Change"] = round(stocks_df.Current - stocks_df.Previous, 2)
 
     stocks_df = stocks_df.round(2)
 
@@ -89,6 +89,21 @@ def render(app: Dash) -> html.Div:
                 style_cell={"backgroundColor": "rgb(50, 50, 50)", "color": "white"},
                 style_as_list_view=True,
                 id="tbl",
+                style_data_conditional=[
+        {
+            'if': {
+                'filter_query': '{Change} >= 0',
+                'column_id': ['Current', 'Previous', 'Change']
+            },
+            'color': 'green'
+        },
+        {
+            'if': {
+                'filter_query': '{Change} < 0',
+                'column_id': ['Current', 'Previous', 'Change']
+            },
+            'color': 'red'
+        }],
             ),
         ],
         style=TABLE_STYLE,

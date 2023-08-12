@@ -30,8 +30,8 @@ def render(app: Dash) -> html.Div:
                     )
                 ],
                 # inline=False,
-                # labelStyle={"margin": "0.5rem"},
-                # style={"display": "flex", "padding": "0rem"},
+                labelStyle={},
+                # style={},
                 id="exchange",
                 value="^FTSE",
             ),
