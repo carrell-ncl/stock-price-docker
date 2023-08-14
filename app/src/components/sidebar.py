@@ -1,5 +1,6 @@
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
+import dash
 import dash_bootstrap_components as dbc
 from . import ids
 from src.components.get_gainers import get_gainers
@@ -45,6 +46,22 @@ def render(app: Dash) -> html.Div:
                 id="stock_id",
                 value="AAPL",
             ),
+        html.Hr(),
+        html.H4("Stock forecaster"),
+        html.Div(
+            
+        [
+            html.Div(
+                dcc.Link(
+                    # "test_pge", href="tst_page",
+                    f"{page['name']} - {page['path']}", href=page["relative_path"],
+                    style={"color": "red"}
+                ),
+            )
+            for page in dash.page_registry.values()
+        ],
+        style={'color': 'black'}
+    ),
         ],
         style=SIDEBAR_STYLE,
     )

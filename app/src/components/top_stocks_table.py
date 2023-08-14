@@ -2,7 +2,6 @@ import datetime
 from dash import Dash, dash_table, html
 import dash_bootstrap_components as dbc
 import pandas as pd
-import numpy as np
 from yahoofinancials import YahooFinancials
 
 from . import ids
@@ -138,7 +137,7 @@ def render(app: Dash) -> html.Div:
                 style_header={"border": "1px solid red"},
                 style_cell={"backgroundColor": "rgb(50, 50, 50)", "color": "white"},
                 style_as_list_view=True,
-                id="tbl",
+                id="tbl2",
                 style_data_conditional=CONDITION_STYLES,
                 tooltip_data=[
                     {

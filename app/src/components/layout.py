@@ -1,5 +1,6 @@
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
+import dash
 
 from . import line_plot, sidebar, top_stocks_table
 
@@ -13,6 +14,8 @@ def create_layout(app: Dash) -> html.Div:
         "backgroundColor": "#353935",
         "position": "absolute",
     }
+    # html.H1('Multi-page app with Dash Pages'),
+	
     header = html.Div(
         style={"bottom": 40},
         className="app-div",
@@ -37,5 +40,6 @@ def create_layout(app: Dash) -> html.Div:
             dbc.Col(sidebar.render(app)),
             dbc.Col(content),
             dbc.Col(top_stocks_table.render(app)),
+            dash.page_container
         ],
     )
